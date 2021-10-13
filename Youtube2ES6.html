@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube 2</title>
+    <style>
+        body{
+            background-color: #181818;
+        }
+        #main{
+            display:flex;
+            width:100%;
+        }
+        #query{
+           padding:0.5%;
+           width: 60%;
+           background-color: white;
+           border:none;
+           outline: none;
+       }
+        #srch{
+           padding:0.5% 2%;
+           color: white;
+           font-weight: 100;
+           background-color: red;
+           border:none;
+       }        
+       ul{
+           list-style-type: none;
+           color: white;
+         }
+         #nav{
+             width:20%;
+             background-color: grey;
+             height:1300px;
+         }
+         #videos{
+             width:80%;
+   
+             display: grid;
+             grid-template-columns: 22% 22% 22% 22%;
+             gap:3%;
+         }
+         div>ul>li{
+            width:75%;
+            height:20px;
+            padding:2%;
+            margin-top: 20%;
+            text-align: center;
+         }
+         div>ul>li:hover{
+             background-color: #181818;
+         }
+    </style>
+</head>
+<body>
+
+<div id="main"> 
+
+ <div id="nav">     
+<ul >
+    <li id="home" onclick="popularVideos()"> Home</li>
+    <li>    <input type="text" id="query" placeholder="Search" />     <button id="srch" onclick="searchVideos()">Search</button></li>   
+</ul>
+</div>
+
+<div id="videos"></div>    
+
+</div>     
+   
+  </body>
+</html>
+
+
+<script>
+ 
+ let parent=document.getElementById("videos");
+
+popularVideos();// initially showing the homepage By default
+
+ async function popularVideos(){ // popular videos on home
+
+    
+let res2=await fetch("https://youtube.googleapis.com/youtube/v3/videos?chart=mostPopular&locale=India&key=AIzaSyA1jEciNZLdTDNgqGvw3cgTPRu88N5tyIg&maxResults=20");
+
+let data2=await res2.json();
+
+//console.log(data2.items);
+addVideos(data2.items);
+}
+//popularVideos();
+
+
+
+function addVideos(videoData){ // add popular videos to home 
+
+parent.innerHTML=null;
+videoData.forEach(({id:videoId2})=>{
+
+//console.log(videoId2);
+
+let div2=document.createElement("div");
+div2.innerHTML=`<iframe width="230" height="200" src="https://www.youtube.com/embed/${videoId2}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;//literals used to append different videoId's
+div2.style.marginTop="20px";
+parent.append(div2);
+
+})
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+ 
+ async function searchVideos(){//searchVideos
+    
+    //q - csk
+    //type - videos
+    //apikey 
+    let query=document.getElementById("query").value;// to show the videos wrt to the input
+    
+        let res=await fetch(`https://youtube.googleapis.com/youtube/v3/search?q=${query}&type=video&key=AIzaSyA1jEciNZLdTDNgqGvw3cgTPRu88N5tyIg&maxResults=20`);
+    
+        let data=await res.json();// because the data is still in form of stream
+        
+        console.log(data);
+        appendVideos(data.items);    
+ }
+  
+ 
+    //searchVideos();
+    
+    
+    
+    function appendVideos(video_data){// appending search Videos
+    videos.innerHTML=null;
+    //=> instead of functions
+    // destructure instead of passing the parameter to access the specific thing directly without using "."
+    //for nested objects to access the specific thing
+    video_data.forEach(({id: {videoId}})=>{  //=>? //need to destructure the object video so that when we console.log(Id),we get videoId directly // for nested objects id:{videoId}
+    
+    //console.log(videoId)
+    
+    //We need to embed our video on our  web app
+    let div=document.createElement("div");
+    
+    // inner html of div is changed to the embedded link of the video in which the video can be changed by using video Id 
+    div.innerHTML=`<iframe width="230" height="200" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;//literals used to append different videoId's
+    div.style.marginTop="20px";
+    videos.append(div);
+    })    
+    
+    
+    }
+  
+    
+
+
+
+
+    </script>
+
+
+//
