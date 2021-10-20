@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp & Login</title>
+</head>
+<style>
+    #in{
+        display:flex;
+        justify-content: center;
+        height:650px;
+        background-color: black;
+    }
+    #signup-form{
+        width:230px;
+        height:250px;
+        margin-top: 70%;
+        background-color: white;
+        color:red;
+    }
+    #signup-form>input{
+        margin:1%;
+    }
+    #login-form{
+        width:230px;
+        height:250px;
+        margin-left: 50px;
+        margin-top:58%;
+        background-color: red; 
+        color:white;
+    }    
+    #login-form>input{
+        margin:1%;
+    }    
+#signup-form:hover,#login-form:hover{
+    border:1px solid black;
+    background-color: rosybrown;
+}
+    </style>
+<body>
+    <div id="in">
+    <div id="signup">
+        <form id="signup-form" onsubmit="Signup(event)">
+            <h3 style="text-align: center;">Sign Up</h3>
+            <input type="text" id="name" placeholder="name" />
+            <input type="email" id="email" placeholder="email" />
+            <input type="password" id="password" placeholder="password" />
+            <input type="text" id="username" placeholder="username" />
+            <input type="number" id="mobile" placeholder="mobile" />
+            <input type="text" id="description" placeholder="description" />
+            <input type="submit" />
+          </form>
+      </div>
+    
+    
+      <div id="login">
+        <form id="login-form" onsubmit="Login(event)">
+            <h3 style="text-align: center;">Login</h3>
+            <input type="text" id="user" placeholder="username" />        
+            <input type="password" id="pass" placeholder="password" />
+            <input type="submit" onclick=back() />
+          </form>
+      </div>
+    </div>
+
+
+
+    <script>
+        // input data should be stored in object format beaucse json format main daalna hai server pe bhejne se pehle
+        // because server wont be able to understand the object data, it can understand only json format
+        function Signup(e){
+            e.preventDefault();
+        
+            let form=document.getElementById("signup-form");
+        
+            let user_data={
+                name:form.name.value,
+                email:form.email.value,
+                password:form.password.value,
+                username:form.username.value,
+                mobile:form.mobile.value,
+                description:form.description.value,
+            };
+            user_data=JSON.stringify(user_data); // to convert object of data to JSON format
+        
+        
+            // we can consider fetch as a function and pass more parameters into it with the help of object
+        
+            fetch("https://masai-api-mocker.herokuapp.com/auth/register",{  // fetch used to talk to masai mock signup server
+        
+             
+            method:'POST',
+           
+            body:user_data,
+           
+            headers:{//letting server know data type is json and is in application
+                'Content-Type':'application/json'//coming from application and in json format
+            },    
+            })
+            .then((res)=>{
+        
+                return res.json()
+            })
+            .then((res2)=>{
+                console.log(res2);
+                
+            })
+            .catch((error)=>{
+                console.log(err);
+            })
+        
+        
+        
+        
+        }
+          
+          
+        
+        function Login(e){
+        
+            e.preventDefault();
+        
+            let form=document.getElementById("login-form");
+        
+            let user_data={
+                password:form.pass.value,
+                username:form.user.value,
+            };
+        
+            let data_to_send=JSON.stringify(user_data); 
+             //console.log(data_to_send);
+        
+             fetch("https://masai-api-mocker.herokuapp.com/auth/login",{
+             // we got to post the login details so that the application can verify
+             // Server is doing the comparision part, we dont need to do it
+             
+             method:'POST',
+        
+             body:data_to_send,
+        
+             headers:{
+                 "Content-Type":"application/json",
+             },
+        
+             }) 
+             .then((res)=>{
+                 return res.json();
+             })
+             .then((res2)=>{
+                 console.log(res2);
+        
+                 fetchmyData(user_data.username,res2.token);//to get the profile
+             })
+             .catch((error)=>{
+                 console.log(error);
+             })
+        }  
+         
+        
+        function fetchmyData(username,token){ //Profile
+            // This one was GET thats why we didnt put the method
+            // Rest of above two were POST thats why we put method
+           fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{//every user would have different user name thats why we made it dynamic 
+        
+            headers:{
+                "Content-Type":"application/json",
+                Authorization:`Bearer ${token}`,// toke is also dynamic // Bearer is a format
+            },
+           })
+           .then((res)=>{
+                 return res.json();
+             })
+             .then((res2)=>{
+                 console.log(res2);
+                 localStorage.setItem("active",res2.username);
+                 function back(){
+             window.location.href="YoutubeNew.html"
+         }
+             })
+             .catch((error)=>{
+                 console.log(error);
+             })
+        }
+        
+        // cliet :user & provider:masai  ; On internet, provider doesnt trust user as user may be a hacker that can alter code or post malicious things . Thats why corse error comes place
+
+         </script>    
+
+</body>
+</html>
